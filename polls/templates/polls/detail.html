@@ -1,0 +1,23 @@
+<h1>{{ question.question_text }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'polls:vote' question.id %}" method="post">
+    {% csrf_token %}
+    {% for choice in question.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br/>
+    {% endfor %}
+    <input type="submit" value="vote" />
+</form>
+{#<ul>#}
+{#    {% for choice in question.choice_set.all %}#}
+{#    <li>{{ choice.choice_text }}</li>#}
+{#    {% endfor %}#}
+{#</ul>#}
+{#简要说明：#}
+{#(1)上面的模板在Question的每个Choice前添加一个单选按钮，每个单选按钮的value属性是对应的各个Choice的id，每个单选按钮的name是“choice”。#}
+{#这意味着当有人选择一个单选按钮并提交表单时，它将发送一个POST数据choice=#，其中#为选择的Choice的id.#}
+{#(2)我们设置表单的action为{% url 'polls:vote' question.id %},并设置method为post。使用post是非常重要的，因为这个提交行为会改变服务器端的数据。#}
+{#(3)forloop.counter表示for标签已经循环了多少次。#}
+{#(4)由于我们创建一个POST表单（具有修改数据的作用），所以我们需要小心跨站点请求伪造。这就是{% csrf_token %}标签的作用，简而言之，所有针对内部URL的POST表单#}
+{#都应该使用这个标签。#}
